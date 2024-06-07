@@ -1,0 +1,24 @@
+{
+  "name": "whatsapp-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "nodemonConfig": {
+    "ignore": [
+      "./auth_info_baileys"
+    ]
+  },
+  "type": "module",
+  "keywords": [],
+  "author": "Snayzs",
+  "license": "ISC",
+  "dependencies": {
+    "@whiskeysockets/baileys": "^6.7.4",
+    "axios": "^1.7.2",
+    "nodemon": "^3.1.3",
+    "qrcode-terminal": "^0.12.0"
+  }
+}
