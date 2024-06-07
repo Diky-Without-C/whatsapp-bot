@@ -5,6 +5,10 @@ import {
 } from "@whiskeysockets/baileys";
 import getCurrentTime from "./utils/time.js";
 import { getData } from "./services/axios.js";
+import { writeFile } from "./services/fs.js";
+import message_log from "./message-log.json" assert { type: "json" };
+
+const msg_log = message_log.messages;
 
 async function connectToWhatsApp() {
   const { state, saveCreds } = await useMultiFileAuthState("auth_info_baileys");
@@ -18,10 +22,7 @@ async function connectToWhatsApp() {
       const shouldReconnect =
         lastDisconnect.error?.output?.statusCode !== DisconnectReason.loggedOut;
 
-      console.log(
-        `connection closed due to : ${lastDisconnect.error}\n
-         reconnecting : ${shouldReconnect}`
-      );
+      console.log(`reconnecting : ${shouldReconnect}`);
 
       if (shouldReconnect) {
         connectToWhatsApp();
@@ -54,15 +55,37 @@ connectToWhatsApp();
 async function handleCheckRepo() {
   const response = await getData();
   const data = response.data;
-  const names = data.map((item) => item.name);
 
-  return `berikut adalah repositories anda :\n- ${names.join("\n- ")}
-  \nsilahkan masukkan nama repositories untuk mendapatkan info lebih lanjut`;
+  return data;
+}
+
+function handleMessageLog(newMessage) {
+  msg_log.push(newMessage);
+
+  writeFile(JSON.stringify({ messages: msg_log }));
 }
 
 async function handleChatResponse(message) {
-  if (message === ".checkrepo") {
-    return await handleCheckRepo();
+  handleMessageLog(message);
+  const last_message = msg_log[msg_log.length - 1];
+
+  if (message === ".checkrepo" || last_message == ".checkrepo") {
+    const repositories = await handleCheckRepo();
+    const names = repositories.map((item) => item.name);
+
+    if (last_message == ".checkrepo") {
+      if (message in names) {
+        const msg_i = names.indexOf(message);
+        const repo = repositories[msg_i];
+
+        return `name: ${repo.names}\nlocation: ${repo.url}\npage: ${repo.page}`;
+      } else {
+        return `tidak ada ${message} didalam repositories anda!`;
+      }
+    }
+
+    return `berikut adalah repositories anda :\n- ${names.join("\n- ")}
+    \nsilahkan masukkan nama repositories untuk mendapatkan info lebih lanjut`;
   }
 
   const currentTime = getCurrentTime("id");
