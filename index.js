@@ -4,6 +4,7 @@ import {
   useMultiFileAuthState,
 } from "@whiskeysockets/baileys";
 import getCurrentTime from "./utils/time.js";
+import { getData } from "./services/axios.js";
 
 async function connectToWhatsApp() {
   const { state, saveCreds } = await useMultiFileAuthState("auth_info_baileys");
@@ -39,9 +40,9 @@ async function connectToWhatsApp() {
     if (msg.key.fromMe || m.type != "notify" || !isFromPerson) return;
     console.log(JSON.stringify(m, undefined, 2));
 
-    const text = handleResponse(
+    const text = await handleChatResponse(
       msg.message.conversation.toLowerCase()
-    ).toString();
+    );
 
     await sock.sendMessage(msg.key.remoteJid, {
       text: text,
@@ -50,9 +51,18 @@ async function connectToWhatsApp() {
 }
 connectToWhatsApp();
 
-function handleResponse(message) {
-  if (message == ".checkrepo") {
-    return "waiting...";
+async function handleCheckRepo() {
+  const response = await getData();
+  const data = response.data;
+  const names = data.map((item) => item.name);
+
+  return `berikut adalah repositories anda :\n- ${names.join("\n- ")}
+  \nsilahkan masukkan nama repositories untuk mendapatkan info lebih lanjut`;
+}
+
+async function handleChatResponse(message) {
+  if (message === ".checkrepo") {
+    return await handleCheckRepo();
   }
 
   const currentTime = getCurrentTime("id");
