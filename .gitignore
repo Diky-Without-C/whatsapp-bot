@@ -25,3 +25,4 @@ dist-ssr
 
 auth_info_baileys
 .env
+message_log.json

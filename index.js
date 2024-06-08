@@ -41,7 +41,7 @@ async function connectToWhatsApp() {
       const text = await handleChatResponse(msg.message.conversation);
 
       await sock.sendMessage(msg.key.remoteJid, {
-        text: JSON.stringify(text),
+        text: text,
       });
     }
   });
