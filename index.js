@@ -33,14 +33,17 @@ async function connectToWhatsApp() {
     const msg = m.messages[0];
     const isFromPerson = msg.key.remoteJid.includes("@s.whatsapp.net");
 
-    if (msg.key.fromMe || m.type != "notify" || !isFromPerson) return;
-    console.log(JSON.stringify(m, undefined, 2));
+    if (msg.key.fromMe) return;
 
-    const text = await handleChatResponse(msg.message.conversation);
+    if (m.type == "notify" && isFromPerson) {
+      console.log(JSON.stringify(m, undefined, 2));
 
-    await sock.sendMessage(msg.key.remoteJid, {
-      text: text,
-    });
+      const text = await handleChatResponse(msg.message.conversation);
+
+      await sock.sendMessage(msg.key.remoteJid, {
+        text: JSON.stringify(text),
+      });
+    }
   });
 }
 connectToWhatsApp();
