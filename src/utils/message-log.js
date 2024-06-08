@@ -10,7 +10,11 @@ export function getLastMsgLog() {
 }
 
 export function updateMsgLog(newMessage) {
+  if (msg_log.length >= 20) {
+    msg_log.shift();
+  }
   msg_log.push(newMessage);
+
   const update = JSON.stringify({ messages: msg_log });
 
   fs.writeFile("message_log.json", update, (error) => {
