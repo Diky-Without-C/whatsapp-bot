@@ -5,10 +5,6 @@ import {
 } from "@whiskeysockets/baileys";
 import getCurrentTime from "./utils/time.js";
 import { getData } from "./services/axios.js";
-import { writeFile } from "./services/fs.js";
-import message_log from "./message-log.json" assert { type: "json" };
-
-const msg_log = message_log.messages;
 
 async function connectToWhatsApp() {
   const { state, saveCreds } = await useMultiFileAuthState("auth_info_baileys");
@@ -59,32 +55,21 @@ async function handleCheckRepo() {
   return data;
 }
 
-function handleMessageLog(newMessage) {
-  msg_log.push(newMessage);
-
-  writeFile(JSON.stringify({ messages: msg_log }));
-}
-
 async function handleChatResponse(message) {
-  handleMessageLog(message);
-  const last_message = msg_log[msg_log.length - 1];
-
-  if (message === ".checkrepo" || last_message == ".checkrepo") {
+  if (message === ".checkrepo") {
     const repositories = await handleCheckRepo();
-    const names = repositories.map((item) => item.name);
+    const names = repositories.map((repo) => repo.name);
+    const list_name = names.map((name) => `- ${name}`);
 
-    if (last_message == ".checkrepo") {
-      if (message in names) {
-        const msg_i = names.indexOf(message);
-        const repo = repositories[msg_i];
+    // if (".checkrepo") {
+    //   if (message) {
+    //     return `name: ${repo.names}\nlocation: ${repo.url}\npage: ${repo.page}`;
+    //   } else {
+    //     return `tidak ada ${message} didalam repositories anda!`;
+    //   }
+    // }
 
-        return `name: ${repo.names}\nlocation: ${repo.url}\npage: ${repo.page}`;
-      } else {
-        return `tidak ada ${message} didalam repositories anda!`;
-      }
-    }
-
-    return `berikut adalah repositories anda :\n- ${names.join("\n- ")}
+    return `berikut adalah repositories anda :\n\n${list_name.join("\n")}
     \nsilahkan masukkan nama repositories untuk mendapatkan info lebih lanjut`;
   }
 

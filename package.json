@@ -8,8 +8,7 @@
   },
   "nodemonConfig": {
     "ignore": [
-      "./auth_info_baileys",
-      "message-log.json"
+      "./auth_info_baileys"
     ]
   },
   "type": "module",
