@@ -3,11 +3,13 @@ import fs from "fs";
 
 const msg_log = message_log.messages;
 
-export function getMessageLog() {
-  return msg_log;
+export function getLastMsgLog() {
+  if (msg_log.length) {
+    return msg_log[msg_log.length - 1];
+  }
 }
 
-export function updateMessageLog(newMessage) {
+export function updateMsgLog(newMessage) {
   msg_log.push(newMessage);
   const update = JSON.stringify({ messages: msg_log });
 

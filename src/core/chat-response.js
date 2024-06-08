@@ -1,14 +1,12 @@
 import getCurrentTime from "./src/utils/time.js";
 import { getData } from "./src/services/axios.js";
-import { getMessageLog, updateMessageLog } from "./src/utils/message-log.js";
+import { getLastMsgLog, updateMsgLog } from "./src/utils/message-log.js";
 
 export default async function handleChatResponse(message) {
-  updateMessageLog(message);
+  const last_msg_log = getLastMsgLog();
+  updateMsgLog(message);
 
-  const msg_log = getMessageLog();
-  const last_msg_log = msg_log.length > 1 && msg_log[msg_log.length - 2];
-
-  if (message === ".checkrepo" || last_msg_log == ".checkrepo") {
+  if (message === ".checkrepo" || last_msg_log === ".checkrepo") {
     const repositories = await handleCheckRepo();
     const names = repositories.map((repo) => repo.name);
     const list_name = names.map((name) => `- ${name}`);
