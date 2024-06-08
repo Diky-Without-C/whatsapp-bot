@@ -3,7 +3,7 @@ import {
   makeWASocket,
   useMultiFileAuthState,
 } from "@whiskeysockets/baileys";
-import handleChatResponse from "./src/core/chat-response";
+import handleChatResponse from "./src/core/chat-response.js";
 
 async function connectToWhatsApp() {
   const { state, saveCreds } = await useMultiFileAuthState("auth_info_baileys");

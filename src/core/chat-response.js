@@ -1,6 +1,6 @@
-import getCurrentTime from "./src/utils/time.js";
-import { getData } from "./src/services/axios.js";
-import { getLastMsgLog, updateMsgLog } from "./src/utils/message-log.js";
+import getCurrentTime from "../utils/time.js";
+import { getData } from "../services/axios.js";
+import { getLastMsgLog, updateMsgLog } from "../utils/message-log.js";
 
 export default async function handleChatResponse(message) {
   const last_msg_log = getLastMsgLog();
