@@ -6,10 +6,20 @@ export default async function handleChatResponse(message) {
   const last_msg_log = getLastMsgLog();
   updateMsgLog(message);
 
-  if (message === ".checkrepo" || last_msg_log === ".checkrepo") {
+  if (message.includes(".checkrepo") || last_msg_log.includes(".checkrepo")) {
     const repositories = await handleCheckRepo();
     const names = repositories.map((repo) => repo.name);
-    const list_name = names.map((name) => `- ${name}`);
+    const selected_repo = message.split(" ")[1];
+
+    if (selected_repo) {
+      if (names.includes(selected_repo)) {
+        const index = names.indexOf(selected_repo);
+        const repo = repositories[index];
+        return `name: ${repo.name}\nsource: ${repo.url}\npage: ${repo.page}`;
+      } else {
+        return `tidak ada ${selected_repo} didalam repositories anda!`;
+      }
+    }
 
     if (last_msg_log == ".checkrepo") {
       if (names.includes(message)) {
@@ -21,12 +31,13 @@ export default async function handleChatResponse(message) {
       }
     }
 
+    const list_name = names.map((name) => `- ${name}`);
     return `berikut adalah repositories anda :\n\n${list_name.join("\n")}
       \nsilahkan masukkan nama repositories untuk mendapatkan info lebih lanjut`;
   }
 
   const currentTime = getCurrentTime("id");
-  return `Halo! Selamat ${currentTime} master\n\n\nberikut adalah beberapa menu yang tersedia :\n- .checkrepo`;
+  return `Halo! Selamat ${currentTime} master\n\nberikut adalah beberapa menu yang tersedia :\n- .checkrepo`;
 }
 
 async function handleCheckRepo() {
